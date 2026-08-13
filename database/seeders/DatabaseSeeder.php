@@ -16,14 +16,26 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $admin = User::query()
+            ->where('email', 'josuasimbolon1605@gmail.com')
+            ->first();
+
+        if ($admin) {
+            $admin->forceFill([
+                'name' => 'Josua Simbolon',
+                'username' => 'josua',
+                'is_staff' => true,
+                'password' => Hash::make('rahasia'),
+            ])->save();
+
+            return;
+        }
 
         User::factory()->create([
-            'name' => 'Khairi Ibnutama',
-            'email' => 'mr.ibnutama@gmail.com',
-            'username' => 'developer',
+            'name' => 'Josua Simbolon',
+            'email' => 'josuasimbolon1605@gmail.com',
+            'username' => 'josua',
             'is_staff' => true,
-            // use Illuminate\Support\Facades\Hash; <-- import di atas
             'password' => Hash::make('rahasia'),
         ]);
     }
