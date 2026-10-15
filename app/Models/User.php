@@ -10,10 +10,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage;
-use Override;
+
+use Filament\Panel;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
-use Filament\Panel;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable([
     'name',
@@ -24,48 +25,23 @@ use Filament\Panel;
     'is_staff',
     'photo_path',
 ])]
-#[Hidden([
-    'password',
-    'remember_token'])]
+#[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable implements FilamentUser, HasAvatar
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    //autorisasi user agar dapat login ke filament panel
+    // Autorisasi user agar dapat login ke Filament Panel
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->is_staff;
-    }
-
-    /**
-     * Hapus foto lama ketika foto profil diganti
-     * dan hapus foto ketika user dihapus.
-     */
-    protected static function booted(): void
-    {
-        static::updated(function (User $user) {
-            if ($user->wasChanged('photo_path')) {
-
-                $oldPhoto = $user->getOriginal('photo_path');
-
-                if (
-                    $oldPhoto &&
-                    Storage::disk('public')->exists($oldPhoto)
-                ) {
-                    Storage::disk('public')->delete($oldPhoto);
-                }
-            }
-        });
-
-        static::deleted(function (User $user) {
-            if (
-                $user->photo_path &&
-                Storage::disk('public')->exists($user->photo_path)
-            ) {
-                Storage::disk('public')->delete($user->photo_path);
-            }
-        });
+        //return $this->is_staff;
+        if ($panel->getId() === 'admin') {
+            return $this->is_staff;
+        }
+        if ($panel->getId() === 'test') {
+            return !$this->is_staff;
+        }
+        return false;
     }
 
     /**
@@ -81,23 +57,24 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
             'is_staff' => 'boolean',
         ];
     }
-    // protected $appends = [
-    //     'avatar_url',
-    // ];
 
-    // user avatar URL
+    // user avatar url
     public function getFilamentAvatarUrl(): ?string
     {
-        // Check if the user has a photo_path
+        // cek apakah user punya foto tersimpan
         if (
-            $this->photo_path && 
+            $this->photo_path &&
             Storage::disk('public')->exists($this->photo_path)
-            ) {
-                /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
-                $disk = Storage::disk('public');
+        ) {
+            // return url foto
+            return Storage::disk('public')->url($this->photo_path);
+        }
+        return null;
+    }
 
-                return $disk->url($this->photo_path);
-            }
-            return null; // Return null if no photo_path is set
+    // relasi ke tabel students
+    public function student(): HasOne
+    {
+        return $this->hasOne(Student::class);
     }
 }

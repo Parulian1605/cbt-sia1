@@ -57,6 +57,15 @@ class UserForm
                             ->prefixIcon(Heroicon::OutlinedPhone)
                             ->tel(),
 
+                        Toggle::make('is_staff')
+                            ->label('Is Staff')
+                            ->helperText('Aktifkan jika akun ini adalah staff.')
+                            ->onIcon(Heroicon::OutlinedCheck)
+                            ->offIcon(Heroicon::OutlinedXMark)
+                            ->onColor('success')
+                            ->offColor('danger')
+                            ->inline(false),
+
                         TextInput::make('password')
                             ->visibleOn('create')
                             ->revealable()

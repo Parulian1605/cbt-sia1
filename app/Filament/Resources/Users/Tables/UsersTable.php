@@ -10,6 +10,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 class UsersTable
@@ -43,8 +44,14 @@ class UsersTable
                     ->placeholder('-')  // Teks yang ditampilkan jika null
                     ->searchable()
                     ->toggleable(),
-                // IconColumn::make('is_staff')
-                //     ->boolean(),
+                IconColumn::make('is_staff')
+                    ->label('Is Staff')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger')
+                    ->alignCenter(),
                 TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime('d F Y, H:i:s')
@@ -57,7 +64,12 @@ class UsersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                TernaryFilter::make('is_staff')
+                    ->label('Status Staff')
+                    ->placeholder('Semua')
+                    ->trueLabel('Staff')
+                    ->falseLabel('Bukan Staff')
+                    ->native(false),
             ])
             ->recordActions([
                 ViewAction::make(),

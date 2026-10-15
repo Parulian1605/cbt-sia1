@@ -9,6 +9,7 @@ use App\Filament\Resources\Migrations\Schemas\MigrationsForm;
 use App\Filament\Resources\Migrations\Tables\MigrationsTable;
 use App\Models\Migrations;
 use BackedEnum;
+use UnitEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -19,6 +20,10 @@ class MigrationsResource extends Resource
     protected static ?string $model = Migrations::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
+    protected static string|UnitEnum|null $navigationGroup = 'Basis Data';
+
+    protected static ?int $navigationSort = 4;
 
     protected static ?string $recordTitleAttribute = 'migration';
 
